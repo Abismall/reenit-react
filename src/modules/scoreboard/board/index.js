@@ -16,7 +16,6 @@ const propTypes = {
 const Board = (props) => {
 
     const { userList } = props;
-    console.log(userList)
     if (!userList){return <div>Loading...</div>}
     return (
     <TableContainer component={Paper}>

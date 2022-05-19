@@ -1,19 +1,18 @@
 
-
-import { timeAgo } from '../utils'
-
+import { useNavigate } from 'react-router'
 // MUI
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
-
+import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 
 
-const User = (props) => {
-    const { user: { username, id, steam64, created_at } } = props;
-
-
+const Guest = () => {
+    let navigate = useNavigate();
+    const handleOnClick = () => {
+        return navigate("/signup")
+    }
     return (
         <Card sx={{ maxWidth: 345 }}>
             {/* <CardMedia
@@ -24,16 +23,10 @@ const User = (props) => {
             /> */}
             <CardContent>
                 <Typography gutterBottom variant="h5" component="div">
-                    {username}
+                    Welcome Guest!
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                    {steam64}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                    member nr. {id}
-                </Typography>
-                <Typography>
-                    Member since {timeAgo(created_at)}
+                <Button onClick={handleOnClick}>Login</Button>
                 </Typography>
             </CardContent>
             <CardActions>
@@ -41,4 +34,4 @@ const User = (props) => {
         </Card>
     )
 };
-export default User
+export default Guest

@@ -1,10 +1,8 @@
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemText from '@mui/material/ListItemText';
+
 import Button from '@mui/material/Button'
 import { DataGrid } from '@mui/x-data-grid';
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 
 import { MapDropDown } from '../map'
 
@@ -20,12 +18,11 @@ export const Settings = ({settings, handleUpdateLobby, handleMapChange}) => {
     const handleOnClick = (e) => {
         if (e.target.id === 'teamDamage') {
             lobby.team_damage = !lobby.team_damage
-            console.log(selection)
         }
         if (e.target.id === 'overtime') {
             lobby.overtime = !lobby.overtime
         }
-        if (e.target.id == 'move') {
+        if (e.target.id === 'move') {
             movePlayers(selection)
 
 

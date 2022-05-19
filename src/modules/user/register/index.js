@@ -3,7 +3,6 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router'
 
 import { registerUser, verifySteam } from '../../../api/requests';
-import { CircularProgress } from '@mui/material';
 
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
@@ -21,7 +20,6 @@ const Item = styled(Paper)(({ theme }) => ({
 
 
 export const Register = ({ isRegistered }) => {
-    const [errorMessages, setErrorMessages] = useState("");
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [passwordConfirmation, setPasswordConfirmation] = useState("");
@@ -31,22 +29,22 @@ export const Register = ({ isRegistered }) => {
     let navigate = useNavigate();
  
     const handleChange = (event) => {
-        if (event.target.id == "username") {
+        if (event.target.id === "username") {
             setUsername(event.target.value)
         }
-        if (event.target.id == "password") {
+        if (event.target.id === "password") {
             setPassword(event.target.value);
         }
-        if (event.target.id == "passwordConfirmation") {
+        if (event.target.id === "passwordConfirmation") {
             setPasswordConfirmation(event.target.value);
         }
-        if (event.target.id == "steam64") {
+        if (event.target.id === "steam64") {
             setProfileUrl(event.target.value);
         }
         
     };
     const handleSubmit = (event) => {
-        if (password == passwordConfirmation){
+        if (password === passwordConfirmation){
             setUserProfile({ username: username, password: password, steam64: steamID })
             verifySteam({ url: profileUrl })
                 .then((res) => {
@@ -55,7 +53,6 @@ export const Register = ({ isRegistered }) => {
                     }
                 })
                 .catch((err) => {
-                    console.log(err)
                 })
         if (steamID != null) {
             registerUser(userProfile)
@@ -66,7 +63,6 @@ export const Register = ({ isRegistered }) => {
                     }
                 })
                 .catch((err) => {
-                    console.log(err, "ERROR");
                 })
             }
         }

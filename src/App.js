@@ -14,6 +14,7 @@ function App() {
               <Routes>
             <Route path="/" element={<Lobby />} />
             <Route path="/signup" element={<UserPage/>}/>
+            <Route path="/highscore" element={<ScoreBoard/>}/>
               </Routes>
             </div>
           </Router>

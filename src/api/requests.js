@@ -31,8 +31,11 @@ export const getUser = () => {
     return axiosInstance.get("/users/user")
 }
 export const registerUser = (credentials) => {
-    return axiosInstance.post("/users/", credentials)
+    return axiosInstance.post("/users", credentials)
 }
 export const verifySteam = (profileUrl) => {
-    return axiosInstance.post("/users/user/actions/verify/", profileUrl)
+    return axiosInstance.post("/users/user/actions/verify", profileUrl)
+}
+export const getProfilePicture = (profileUrl) => {
+    return axiosInstance.get("/users/user/actions/steamprofile", profileUrl)
 }

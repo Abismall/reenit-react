@@ -1,7 +1,4 @@
 import React from 'react';
-
-import { getCurrentUser } from '../../../utils'
-
 import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography';
 import { Team } from './team'

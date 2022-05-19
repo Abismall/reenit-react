@@ -1,3 +1,4 @@
+import { axiosInstance } from "../api/config";
 import jwt_decode from "jwt-decode";
 export const getCurrentToken = () => {
     return localStorage.getItem('Bearer') || null;
@@ -5,6 +6,17 @@ export const getCurrentToken = () => {
 export const getCurrentUser = () => {
   return jwt_decode(getCurrentToken()).username
 }
+export const setUser = () => {
+  const token = getCurrentToken()
+  if (token){
+    axiosInstance.defaults.headers.common['Authorization'] = 'bearer ' + token 
+    return true
+  }
+  return null
+}
+  
+
+
 export const timeAgo = (time) => {
 
   switch (typeof time) {
@@ -40,7 +52,7 @@ export const timeAgo = (time) => {
     token = 'ago',
     list_choice = 1;
 
-  if (seconds == 0) {
+  if (seconds === 0) {
     return 'Just now'
   }
   if (seconds < 0) {

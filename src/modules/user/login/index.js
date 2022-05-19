@@ -1,11 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-
+import { setUser } from '../../../utils';
 
 import { loginUser } from '../../../api/requests';
-
-import Typography from '@mui/material/Typography';
-import { FormGroup } from '@mui/material';
+import { axiosInstance } from '../../../api/config';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import { styled } from '@mui/material/styles';
@@ -23,12 +21,16 @@ const Item = styled(Paper)(({ theme }) => ({
 
 export const Login = () => {
     let navigate = useNavigate();
-    const [errorMessages, setErrorMessages] = useState("");
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
+    useEffect(() => {
+        let user = setUser();
+        if (user){
+            navigate("/")
+        }
+    }, [navigate])
     const handleChangeUname = event => {
         setUsername(event.target.value)
-        console.log(username)
     };
     const handleChangePass = event => {
         setPassword(event.target.value);
@@ -45,12 +47,14 @@ export const Login = () => {
         formData.set("password", password);
         loginUser(formData)
             .then((res) => {
-                console.log(res)
-                localStorage.setItem('Bearer', res.token)
-                return navigate("/")
+                if (res){
+                    localStorage.setItem('Bearer', res.token)
+                    axiosInstance.defaults.headers.common['Authorization'] = 'bearer ' + res.token
+                    return navigate("/")
+                }
+
             })
             .catch((err) => {
-                console.log(err, "ERROOOOR");
         })
 
   

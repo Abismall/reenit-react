@@ -1,17 +1,12 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom'
 
 
 import reenitLogo from '../../static/images/reenitLogo.png'
 import { Login } from './login'
 import { Register } from './register'
-
-import User from '../../components/User'
-
 import Button from '@mui/material/Button';
 import Avatar from '@mui/material/Avatar';
 import { styled } from '@mui/material/styles';
-import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
 const Item = styled(Paper)(({ theme }) => ({
@@ -24,7 +19,6 @@ const Item = styled(Paper)(({ theme }) => ({
 
 
 export const SignUp = () => {
-    let navigate = useNavigate();
     const [isRegistered, setRegistered] = useState(true);
     const handleOnClick = () => {
         setRegistered(false);
