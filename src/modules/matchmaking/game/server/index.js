@@ -1,26 +1,24 @@
-import { mapPool } from '../../../../utils/'
 
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
+export const AvailableDropDown = ({ available, setLocation, location }) => {
 
-export const MapDropDown = ({ current, handleUpdateLobby }) => {
-  const handleOnChange = (e) => {
-    current.current_map = e.target.value;
-    handleUpdateLobby(current, true)
-    
-  }
+    const handleOnChange = (e) => {
+        setLocation(e.target.value)
+    }
     return (
         <FormControl fullWidth>
             <Select
                 labelId="map-select-DropDown"
                 id="map-simple-select"
-                value={current.current_map}
+                value={location}
                 label="Map"
                 onChange={handleOnChange}
                 >
-                  {mapPool.map((map) =>
-                    <MenuItem key={map} value={map}>{map}</MenuItem>
+                {available.map((server) =>
+                     
+                      <MenuItem key={server.id}  value={server.id}>{server.name}</MenuItem>
                   )}
                   
                 </Select>
@@ -28,4 +26,4 @@ export const MapDropDown = ({ current, handleUpdateLobby }) => {
         
     )
 }
-export default MapDropDown
+export default AvailableDropDown

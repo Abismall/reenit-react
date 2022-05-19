@@ -6,8 +6,11 @@ import Button from '@mui/material/Button';
 export const LobbyList = (props) => {
     const { activeGames, handleJoinLobby } = props
     const [selected, setSelected] = useState(false);
+    console.log(activeGames)
     const handleOnClick = (e) => {
-        setSelected(e.id);
+        if (e.row.active === false) {
+            setSelected(e.row.title);
+        }
         
     }
     const handleFocusOut = (e) => {
@@ -26,7 +29,7 @@ export const LobbyList = (props) => {
                 onCellClick={handleOnClick}
                 onCellFocusOut={handleFocusOut}
             />
-            {selected && <Button onClick={() => handleJoinLobby(activeGames[selected - 1].title)}>Join [{activeGames[selected - 1].title}]</Button>}
+            {selected && <Button style={{backgroundColor: 'green', color: 'white'}} onClick={() => handleJoinLobby(selected)}>Join [{selected}]</Button>}
         </div>
         
     )

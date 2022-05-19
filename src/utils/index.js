@@ -89,7 +89,8 @@ export const settingsColumns = [
     field: 'steam64',
     headerName: 'steamID',
     width: 150,
-    },
+  },
+
   
 ];
 export const LobbyListColumns = [
@@ -113,5 +114,9 @@ export const LobbyListColumns = [
     headerName: "overtime",
     width: 150,
   },
-
+  {
+    field: 'active',
+    headerName: 'Active',
+    width: 150,
+  },
 ]

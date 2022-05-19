@@ -10,7 +10,9 @@ import { settingsColumns } from '../../../../utils'
 
 import { movePlayers } from '../../../../api/requests'
 
-export const Settings = ({settings, handleUpdateLobby, handleMapChange}) => {
+import { AvailableDropDown } from '../server'
+
+export const Settings = ({settings, handleUpdateLobby, handleMapChange, available, location, setLocation, setChange}) => {
     const { current: { lobby } } = settings
     const [selection, setSelection] = useState([])
     const SettingsColumns = settingsColumns
@@ -27,7 +29,7 @@ export const Settings = ({settings, handleUpdateLobby, handleMapChange}) => {
 
 
         }
-        handleUpdateLobby(lobby)
+        handleUpdateLobby(lobby, true)
     }
     const handleOnSelectionChange = (e) => {
         if (e) {
@@ -40,7 +42,8 @@ export const Settings = ({settings, handleUpdateLobby, handleMapChange}) => {
             
             <Button onClick={handleOnClick}  id="overtime">{lobby.overtime? "disable OT" : "enable OT"}</Button>
             <Button onClick={handleOnClick}  id="teamDamage">{lobby.team_damage ? "disable ff" : "enable ff"}</Button>
-            <MapDropDown current={lobby} updateLobby={handleUpdateLobby} />
+            <MapDropDown current={lobby} handleUpdateLobby={handleUpdateLobby} />
+            <AvailableDropDown available={available} location={location} setLocation={setLocation} setChange={setChange}/>
             {selection.length > 0 && <Button onClick={handleOnClick} style={{color: 'red'}} id="move">{selection.length > 1? "Move players" : "Move player"}</Button>}
             <DataGrid
                 

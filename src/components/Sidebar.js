@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState } from 'react'
-import { getUser } from '../api/requests';
+import { getUser, getProfilePicture } from '../api/requests';
 import { setUser } from '../utils'
 import User from './User'
 import Guest from './Guest'
@@ -10,6 +10,7 @@ import Guest from './Guest'
 
 const Sidebar = () => {
     const [isUser, setCurrentUser] = useState(false);
+    const [steamProfile, setSteamProfile] = useState(false);
     useEffect(() => {
         const user = setUser();
         if (user){
@@ -24,6 +25,13 @@ const Sidebar = () => {
             })
         }
     }, [])
+    useEffect(() => {
+        getProfilePicture()
+            .then((res) => {
+            setSteamProfile(res)
+        })
+    }, [])
+
     // useEffect(() => {
     //     getProfilePicture({url: isUser.steam64})
     //     .then((res) =>{
@@ -38,7 +46,7 @@ const Sidebar = () => {
     // }, [isUser])
     return (
         <div style={{marginTop: '340px'}}>
-        {isUser? <User user={isUser}/> : <Guest/>}
+            {isUser ? <User user={isUser} steamProfile={steamProfile}/> : <Guest/>}
         </div>
     )
 };

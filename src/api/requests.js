@@ -39,3 +39,15 @@ export const verifySteam = (profileUrl) => {
 export const getProfilePicture = (profileUrl) => {
     return axiosInstance.get("/users/user/actions/steamprofile", profileUrl)
 }
+export const HostGame = (title) => {
+    return axiosInstance.post("/reenit/scrims", title)
+}
+export const getAvailableServers = () => {
+    return axiosInstance.get("dathost/available/")
+}
+export const startServer = (serverID, current) => {
+    return axiosInstance.post(`dathost/start/${serverID}`, current)
+}
+export const getServerData = (serverID) => {
+    return axiosInstance.get(`dathost/details/${serverID}`)
+}

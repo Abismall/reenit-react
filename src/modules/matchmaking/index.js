@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
-
-import { getAllCurrentGames, getCurrentGame, leaveLobby, switchTeam, updateLobby, joinLobby } from '../../api/requests';
+import { useNavigate } from 'react-router'
+import { getAllCurrentGames, getCurrentGame, leaveLobby, switchTeam, updateLobby, joinLobby, HostGame, getAvailableServers } from '../../api/requests';
 import { setUser } from '../../utils';
 import ActiveGame from './game'
 import Sidebar from '../../components/Sidebar'
 import { LobbyList } from './lobbyList'
-
+import GameCreator from '../../components/GameCreator'
 import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
 import { styled } from '@mui/material/styles';
@@ -24,12 +24,13 @@ const Item = styled(Paper)(({ theme }) => ({
 const Lobby = () => {
     const [activeGames, setActiveGames] = useState([]);
     const [currentGame, setCurrentGame] = useState(false);
+    const [availableServers, setAvailableServers] = useState([]);
     const [change, setChange] = useState(false);
+    let navigate = useNavigate();
 
     useEffect(() => {
         const user = setUser();
         if (user){
-            console.log(user)
             getCurrentGame()
             .then(res => {
                 if (res) {
@@ -53,38 +54,68 @@ const Lobby = () => {
             setActiveGames([]);
         })
         setChange(false);
-    }, [change])
+    }, [])
+    useEffect(() => {
+        getAvailableServers()
+            .then((res) => {
+                setAvailableServers(res);
+        })
+    }, [])
     const handleTeamSwitch = () => {
-        switchTeam();
+        switchTeam()
         setChange(true);
+      
     }
-    const handleUpdateLobby = (data) => {
-        updateLobby(data);
-        setChange(true);
+    const handleUpdateLobby = ( data, update ) => {
+        console.log(data)
+        updateLobby(data)
+        if (update === true) {
+            setChange(true);
+        }
+       
     }
     const handleMapChange = (data) => {
-        updateLobby(data);
+        updateLobby(data)
         setChange(true);
+        
     }
     const handleJoinLobby = (data) => {
-        joinLobby({title: data});
-        setChange(true);
+        joinLobby({ title: data })
+            .then((res) => {
+                setChange(true);
+        })
     }
     const handleLeaveLobby = () => {
-        leaveLobby();
+        leaveLobby()
+        navigate("/")
         setChange(true);
+    
+     
+        
+    }
+    const handleHostGame = (data) => {
+        HostGame(data)
+            .then(() => {
+                setChange(true);
+            })
+        
     }
     return (
             <Grid container spacing={3}>
             <Grid item xs={2}>
             </Grid>
             <Grid item xs={6}>
-                            <Item style={{paddingTop: '140px'}}>
-                                {currentGame ? <ActiveGame
-                                    onSwitch={handleTeamSwitch}
-                                    handleUpdateLobby={handleUpdateLobby} handleMapChange={handleMapChange}
-                                    handleJoinLobby={handleJoinLobby} handleLeaveLobby={handleLeaveLobby}
-                                    current={currentGame} />
+                <Item style={{ paddingTop: '280px' }}>
+                    {!currentGame && <GameCreator handleHostGame={handleHostGame} />}
+                    {currentGame ? <ActiveGame
+                        onSwitch={handleTeamSwitch}
+                        handleUpdateLobby={handleUpdateLobby} handleMapChange={handleMapChange}
+                        handleJoinLobby={handleJoinLobby} handleLeaveLobby={handleLeaveLobby}
+                        current={currentGame}
+                        available={availableServers}
+                        setChange={setChange}
+
+                    />
                         : <LobbyList activeGames={activeGames} handleJoinLobby={handleJoinLobby}></LobbyList>}
                 </Item>
             </Grid>
