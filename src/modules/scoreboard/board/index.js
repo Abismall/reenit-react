@@ -10,16 +10,21 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 
 const propTypes = {
-  userList: PropTypes.array.isRequired
+  userList: PropTypes.array.isRequired,
 };
 
 const Board = (props) => {
-
-    const { userList } = props;
-    if (!userList){return <div>Loading...</div>}
-    return (
+  const { userList } = props;
+  if (!userList) {
+    return <div>Loading...</div>;
+  }
+  return (
     <TableContainer component={Paper}>
-      <Table sx={{ minWidth: 650 }} size="small" aria-label="a dense table">
+      <Table
+        sx={{ minWidth: 650 }}
+        size="small"
+        aria-label="a dense table"
+      >
         <TableHead>
           <TableRow>
             <TableCell>Player</TableCell>
@@ -30,7 +35,9 @@ const Board = (props) => {
           {userList.map((player) => (
             <TableRow
               key={player.id}
-              sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+              sx={{
+                '&:last-child td, &:last-child th': { border: 0 },
+              }}
             >
               <TableCell component="th" scope="row">
                 {player.username}

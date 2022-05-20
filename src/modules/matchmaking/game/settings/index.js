@@ -1,70 +1,85 @@
-
-import Button from '@mui/material/Button'
+import Button from '@mui/material/Button';
 import { DataGrid } from '@mui/x-data-grid';
 
-import { useState } from 'react'
+import { useState } from 'react';
 
-import { MapDropDown } from '../map'
+import { MapDropDown } from '../map';
 
-import { settingsColumns } from '../../../../utils'
+import { settingsColumns } from '../../../../utils';
 
-import { movePlayers } from '../../../../api/requests'
+import { movePlayers } from '../../../../api/requests';
 
-import { AvailableDropDown } from '../server'
+import { AvailableDropDown } from '../server';
 
-export const Settings = ({settings, handleUpdateLobby, handleMapChange, available, location, setLocation, setChange}) => {
-    const { current: { lobby } } = settings
-    const [selection, setSelection] = useState([])
-    const SettingsColumns = settingsColumns
-    
-    const handleOnClick = (e) => {
-        if (e.target.id === 'teamDamage') {
-            lobby.team_damage = !lobby.team_damage
-        }
-        if (e.target.id === 'overtime') {
-            lobby.overtime = !lobby.overtime
-        }
-        if (e.target.id === 'move') {
-            movePlayers(selection)
+export const Settings = ({
+  settings,
+  handleUpdateLobby,
+  handleMapChange,
+  available,
+  location,
+  setLocation,
+  setChange,
+}) => {
+  const {
+    current: { lobby },
+  } = settings;
+  const [selection, setSelection] = useState([]);
+  const SettingsColumns = settingsColumns;
 
-
-        }
-        handleUpdateLobby(lobby, true)
+  const handleOnClick = (e) => {
+    if (e.target.id === 'teamDamage') {
+      lobby.team_damage = !lobby.team_damage;
     }
-    const handleOnSelectionChange = (e) => {
-        if (e) {
-            setSelection(e)
-        }
+    if (e.target.id === 'overtime') {
+      lobby.overtime = !lobby.overtime;
     }
+    if (e.target.id === 'move') {
+      movePlayers(selection);
+    }
+    handleUpdateLobby(lobby, true);
+  };
+  const handleOnSelectionChange = (e) => {
+    if (e) {
+      setSelection(e);
+    }
+  };
 
-    return (
-        <div style={{ height: '400px', width: '100%' }}>
-            
-            <Button onClick={handleOnClick}  id="overtime">{lobby.overtime? "disable OT" : "enable OT"}</Button>
-            <Button onClick={handleOnClick}  id="teamDamage">{lobby.team_damage ? "disable ff" : "enable ff"}</Button>
-            <MapDropDown current={lobby} handleUpdateLobby={handleUpdateLobby} />
-            <AvailableDropDown available={available} location={location} setLocation={setLocation} setChange={setChange}/>
-            {selection.length > 0 && <Button onClick={handleOnClick} style={{color: 'red'}} id="move">{selection.length > 1? "Move players" : "Move player"}</Button>}
-            <DataGrid
-                
-                rows={settings.current.Players}
-                
-                columns={SettingsColumns}
-                
-                pageSize={5}
-                
-                rowsPerPageOptions={[5]}
-                
-                checkboxSelection
-                
-                onSelectionModelChange={handleOnSelectionChange}
-                
-                disableSelectionOnClick
-                
-                
-            />
-            
-        </div>
-    )
-
+  return (
+    <div style={{ height: '400px', width: '100%' }}>
+      <Button onClick={handleOnClick} id="overtime">
+        {lobby.overtime ? 'disable OT' : 'enable OT'}
+      </Button>
+      <Button onClick={handleOnClick} id="teamDamage">
+        {lobby.team_damage ? 'disable ff' : 'enable ff'}
+      </Button>
+      <MapDropDown
+        current={lobby}
+        handleUpdateLobby={handleUpdateLobby}
+      />
+      <AvailableDropDown
+        available={available}
+        location={location}
+        setLocation={setLocation}
+        setChange={setChange}
+      />
+      {selection.length > 0 && (
+        <Button
+          onClick={handleOnClick}
+          style={{ color: 'red' }}
+          id="move"
+        >
+          {selection.length > 1 ? 'Move players' : 'Move player'}
+        </Button>
+      )}
+      <DataGrid
+        rows={settings.current.Players}
+        columns={SettingsColumns}
+        pageSize={5}
+        rowsPerPageOptions={[5]}
+        checkboxSelection
+        onSelectionModelChange={handleOnSelectionChange}
+        disableSelectionOnClick
+      />
+    </div>
+  );
 };

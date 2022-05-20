@@ -2,23 +2,23 @@ import { useState, useEffect } from 'react';
 
 import { getAllUsers } from '../../api/requests';
 
-import Board from './board'
-
-
+import Board from './board';
 
 const ScoreBoard = () => {
-    const [users, setUsers] = useState(null);
+  const [users, setUsers] = useState(null);
 
-    useEffect(() => {
-        getAllUsers()
-            .then(users => setUsers(users));
-    }, []);
+  useEffect(() => {
+    getAllUsers().then((users) => setUsers(users));
+  }, []);
 
-
-    if (!users) {return <div>No users found</div>;}
+  if (!users) {
+    return <div>No users found</div>;
+  }
   return (
-      <div><Board userList={users}/></div>
-  )
-}
+    <div>
+      <Board userList={users} />
+    </div>
+  );
+};
 
-export default ScoreBoard
+export default ScoreBoard;
