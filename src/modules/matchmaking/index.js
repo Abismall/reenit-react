@@ -34,6 +34,7 @@ const Lobby = () => {
             getCurrentGame()
             .then(res => {
                 if (res) {
+                    console.log(res)
                     setCurrentGame(res);
                 }
             })
@@ -67,7 +68,6 @@ const Lobby = () => {
       
     }
     const handleUpdateLobby = ( data, update ) => {
-        console.log(data)
         updateLobby(data)
         if (update === true) {
             setChange(true);

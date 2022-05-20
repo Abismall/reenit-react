@@ -6,7 +6,6 @@ import Button from '@mui/material/Button';
 export const LobbyList = (props) => {
     const { activeGames, handleJoinLobby } = props
     const [selected, setSelected] = useState(false);
-    console.log(activeGames)
     const handleOnClick = (e) => {
         if (e.row.active === false) {
             setSelected(e.row.title);

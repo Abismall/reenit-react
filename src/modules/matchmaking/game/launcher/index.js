@@ -13,18 +13,16 @@ export const Launcher = ({ location, current, handleUpdateLobby }) => {
         initialize();
     }, [])
     const initialize = () => {
-        
+        console.log(current)
         startServer(location, current)
             .then(() => [
                 getServerData(location)
                     .then((res) => {
                         if (res) {
                             current.lobby.active = true
-                            console.log(current.lobby)
                             handleUpdateLobby(current.lobby, false)
                             setInfo(res);
                             setLaunched(true);
-
                     }
                 })
         ])

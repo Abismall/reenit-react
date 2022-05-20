@@ -20,51 +20,33 @@ const Item = styled(Paper)(({ theme }) => ({
 
 
 export const Register = ({ isRegistered }) => {
-    const [username, setUsername] = useState("");
-    const [password, setPassword] = useState("");
-    const [passwordConfirmation, setPasswordConfirmation] = useState("");
-    const [profileUrl, setProfileUrl] = useState("");
-    const [steamID, setSteamID] = useState(null);
-    const [userProfile, setUserProfile] = useState({});
     let navigate = useNavigate();
- 
+    const [userProfile, setProfile] = useState({});
     const handleChange = (event) => {
         if (event.target.id === "username") {
-            setUsername(event.target.value)
+            userProfile.username = event.target.value;
         }
         if (event.target.id === "password") {
-            setPassword(event.target.value);
+            userProfile.password = event.target.value;
         }
         if (event.target.id === "passwordConfirmation") {
-            setPasswordConfirmation(event.target.value);
+            userProfile.passwordConfirmation = event.target.value;
         }
         if (event.target.id === "steam64") {
-            setProfileUrl(event.target.value);
+            userProfile.steam64 = event.target.value;
         }
+        
         
     };
     const handleSubmit = (event) => {
-        if (password === passwordConfirmation){
-            setUserProfile({ username: username, password: password, steam64: steamID })
-            verifySteam({ url: profileUrl })
-                .then((res) => {
-                    if (res) {
-                        setSteamID(res.steam64)
-                    }
-                })
-                .catch((err) => {
-                })
-        if (steamID != null) {
+        if (userProfile.password === userProfile.passwordConfirmation) {
             registerUser(userProfile)
                 .then((res) => {
                     if (res) {
-                    isRegistered(true);
-                    return navigate("/signup")                          
-                    }
-                })
-                .catch((err) => {
-                })
-            }
+                        isRegistered(true);
+                        return navigate("/signup")
+                }
+            })
         }
     }
     
