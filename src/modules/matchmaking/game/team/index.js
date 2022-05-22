@@ -6,7 +6,6 @@ import GitHubIcon from '@mui/icons-material/GitHub';
 import Tooltip from '@mui/material/Tooltip';
 
 export const Team = (props) => {
-  const profileBaseUrl = 'https://steamcommunity.com/profiles/';
   const { team, captainOne, captainTwo } = props;
   return (
     <List style={{}}>
@@ -18,7 +17,7 @@ export const Team = (props) => {
               key={player.steam64}
               title={
                 player.steam64
-                  ? profileBaseUrl + player.steam64
+                  ? `${process.env.PROFILEBASEURL}${player.steam64}`
                   : null
               }
             >
@@ -29,16 +28,10 @@ export const Team = (props) => {
                 }}
               >
                 <ListItemText
-                  primary={
-                    player.username
-                      ? player.username
-                      : 'Loading player...'
-                  }
+                  primary={player.username ? player.username : null}
                 />
                 {player.username === captainOne ||
                 player.username === captainTwo ? (
-                  <GitHubIcon />
-                ) : null ? (
                   <GitHubIcon />
                 ) : null}
               </ListItem>

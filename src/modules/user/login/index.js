@@ -23,7 +23,6 @@ export const Login = () => {
   const [password, setPassword] = useState('');
   useEffect(() => {
     let user = setUser();
-    console.log(user);
     if (user) {
       navigate('/');
     }

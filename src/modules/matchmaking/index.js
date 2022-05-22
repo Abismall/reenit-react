@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useReducer } from 'react';
 import { useNavigate } from 'react-router';
 import {
   getAllCurrentGames,
@@ -8,8 +8,9 @@ import {
   updateLobby,
   joinLobby,
   HostGame,
-  getAvailableServers,
+  getAvailableLocations,
 } from '../../api/requests';
+import SettingsDrawer from '../../components/SettingsDrawer';
 import { setUser } from '../../utils';
 import ActiveGame from './game';
 import Sidebar from '../../components/Sidebar';
@@ -18,7 +19,8 @@ import GameCreator from '../../components/GameCreator';
 import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
 import { styled } from '@mui/material/styles';
-
+import ScoreBoard from './scoreboard';
+import { getUser, getSteamProfile } from '../../api/requests';
 const Item = styled(Paper)(({ theme }) => ({
   ...theme.typography.body2,
   padding: theme.spacing(1),
@@ -28,54 +30,69 @@ const Item = styled(Paper)(({ theme }) => ({
 }));
 
 const Lobby = () => {
+  const [currentUser, setCurrentUser] = useState({});
+  const [profileLoaded, setLoaded] = useState(false);
+  const [steamProfile, setProfile] = useState(false);
   const [activeGames, setActiveGames] = useState([]);
   const [currentGame, setCurrentGame] = useState(false);
-  const [availableServers, setAvailableServers] = useState([]);
+  const [availableLocations, setAvailableLocations] = useState([]);
+  const [currentView, setView] = useState('Lobby');
   const [change, setChange] = useState(false);
   let navigate = useNavigate();
 
   useEffect(() => {
-    const user = setUser();
-    if (user == true) {
-      getCurrentGame()
-        .then((res) => {
-          if (res) {
-            console.log(res);
-            setCurrentGame(res);
-          }
-        })
-        .catch((error) => {
-          setCurrentGame(false);
-        });
-    } else if (user == false) {
-      setChange(false);
-      navigate('/signup');
-    }
+    setChange(false);
+    reloadData();
   }, [change]);
   useEffect(() => {
-    getAllCurrentGames()
-      .then((res) => {
-        if (res) {
-          setActiveGames(res);
+    loadUser();
+  }, []);
+
+  const loadUser = async () => {
+    const user = setUser();
+    if (user == true) {
+      const userData = await getUser();
+      if (userData != null) {
+        setCurrentUser(userData);
+        const steamProfile = await getSteamProfile();
+        if (steamProfile != null) {
+          setProfile(steamProfile);
+        } else {
+          setProfile(false);
         }
-      })
-      .catch((error) => {
+        setLoaded(true);
+      }
+    }
+  };
+  const reloadData = async () => {
+    const currentGame = await getCurrentGame();
+    if (currentGame) {
+      setCurrentGame(currentGame);
+      const locationList = await getAvailableLocations();
+      if (
+        locationList &&
+        currentGame !== false &&
+        locationList.length > 0
+      ) {
+        setAvailableLocations(locationList);
+      }
+    } else {
+      const serverList = await getAllCurrentGames();
+      if (serverList && serverList.length > 0) {
+        setActiveGames(serverList);
+      } else {
         setActiveGames([]);
-      });
-    setChange(false);
-  }, []);
-  useEffect(() => {
-    getAvailableServers().then((res) => {
-      setAvailableServers(res);
-    });
-  }, []);
+      }
+    }
+  };
+
   const handleTeamSwitch = () => {
     switchTeam();
     setChange(true);
   };
-  const handleUpdateLobby = (data, update) => {
+  const handleUpdateLobby = (data, reload) => {
     updateLobby(data);
-    if (update === true) {
+    if (reload === true) {
       setChange(true);
     }
   };
@@ -84,13 +101,13 @@ const Lobby = () => {
     setChange(true);
   };
   const handleJoinLobby = (data) => {
-    joinLobby({ title: data }).then((res) => {
+    joinLobby({ title: data }).then(() => {
       setChange(true);
     });
   };
-  const handleLeaveLobby = () => {
+  const handleLeaveLobby = async () => {
     leaveLobby();
-    navigate('/');
+    setCurrentGame(false);
     setChange(true);
   };
   const handleHostGame = (data) => {
@@ -98,35 +115,49 @@ const Lobby = () => {
       setChange(true);
     });
   };
+
   return (
     <Grid container spacing={3}>
       <Grid item xs={2}></Grid>
       <Grid item xs={6}>
-        <Item style={{ paddingTop: '280px' }}>
-          {!currentGame && (
-            <GameCreator handleHostGame={handleHostGame} />
-          )}
-          {currentGame ? (
-            <ActiveGame
-              onSwitch={handleTeamSwitch}
-              handleUpdateLobby={handleUpdateLobby}
-              handleMapChange={handleMapChange}
-              handleJoinLobby={handleJoinLobby}
-              handleLeaveLobby={handleLeaveLobby}
-              current={currentGame}
-              available={availableServers}
-              setChange={setChange}
-            />
-          ) : (
-            <LobbyList
-              activeGames={activeGames}
-              handleJoinLobby={handleJoinLobby}
-            ></LobbyList>
-          )}
-        </Item>
+        {currentView === 'Lobby' && (
+          <Item style={{ paddingTop: '280px' }}>
+            {!currentGame && (
+              <GameCreator handleHostGame={handleHostGame} />
+            )}
+            {currentGame ? (
+              <ActiveGame
+                onSwitch={handleTeamSwitch}
+                handleUpdateLobby={handleUpdateLobby}
+                handleMapChange={handleMapChange}
+                handleJoinLobby={handleJoinLobby}
+                handleLeaveLobby={handleLeaveLobby}
+                current={currentGame}
+                available={availableLocations}
+                setChange={setChange}
+              />
+            ) : (
+              <LobbyList
+                activeGames={activeGames}
+                handleJoinLobby={handleJoinLobby}
+              ></LobbyList>
+            )}
+          </Item>
+        )}
+        {currentView === 'Scoreboard' && (
+          <Item style={{ paddingTop: '280px' }}>
+            <ScoreBoard />
+          </Item>
+        )}
       </Grid>
       <Grid item xs>
-        <Sidebar />
+        <Sidebar
+          loadUser={loadUser}
+          setView={setView}
+          profileLoaded={profileLoaded}
+          steamProfile={steamProfile}
+          currentUser={currentUser}
+        />
       </Grid>
     </Grid>
   );

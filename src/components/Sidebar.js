@@ -1,56 +1,55 @@
-import React, { useEffect, useState } from 'react';
-import { getUser, getProfilePicture } from '../api/requests';
-import { setUser } from '../utils';
+import React, { useState } from 'react';
+
 import User from './User';
 import Guest from './Guest';
-
+import UserPanel from './UserPanel';
+import SettingsDrawer from './SettingsDrawer';
 // MUI
+import Paper from '@mui/material/Paper';
 
-const Sidebar = () => {
-  const [isUser, setCurrentUser] = useState(false);
-  const [steamProfile, setSteamProfile] = useState(false);
-  useEffect(() => {
-    const user = setUser();
-    if (user == true) {
-      getUser()
-        .then((res) => {
-          if (res) {
-            setCurrentUser(res);
-          }
-        })
-        .catch((err) => {
-          setUser(false);
-        });
-    } else if (user == false) {
-      setUser(false);
+const Sidebar = (props) => {
+  const [isOpen, setOpen] = useState(false);
+  const {
+    loadUser,
+    setView,
+    steamProfile,
+    profileLoaded,
+    currentUser,
+  } = props;
+  const toggleDrawer = (isOpen) => (event) => {
+    console.log(event);
+    if (
+      event.type === 'keydown' &&
+      (event.key === 'Tab' || event.key === 'Shift')
+    ) {
+      return;
     }
-  }, []);
-  useEffect(() => {
-    getProfilePicture().then((res) => {
-      setSteamProfile(res);
-    });
-  }, [isUser]);
 
-  // useEffect(() => {
-  //     getProfilePicture({url: isUser.steam64})
-  //     .then((res) =>{
-  //         if (res){
-  //             console.log(res ,"profile url no error")
-  //         }
-  //     })
-  //     .catch((err) => {
-  //         console.log(err, "profile url error")
-  //     })
+    setOpen(isOpen);
+  };
 
-  // }, [isUser])
   return (
-    <div style={{ marginTop: '340px' }}>
-      {isUser ? (
-        <User user={isUser} steamProfile={steamProfile} />
+    <Paper style={{ marginTop: 350 }}>
+      {profileLoaded ? (
+        <User user={currentUser} steamProfile={steamProfile} />
       ) : (
         <Guest />
       )}
-    </div>
+      {profileLoaded && (
+        <UserPanel
+          toggleDrawer={toggleDrawer}
+          isOpen={isOpen}
+          setView={setView}
+        />
+      )}
+      <SettingsDrawer
+        toggleDrawer={toggleDrawer}
+        isOpen={isOpen}
+        currentUser={currentUser}
+        steamProfile={steamProfile}
+        loadUser={loadUser}
+      />
+    </Paper>
   );
 };
 export default Sidebar;

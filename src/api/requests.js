@@ -30,6 +30,9 @@ export const loginUser = (loginCredentials) => {
 export const getUser = () => {
   return axiosInstance.get('users/user');
 };
+export const updateUser = (update) => {
+  return axiosInstance.put('/users/', update);
+};
 export const registerUser = (credentials) => {
   console.log(credentials);
   return axiosInstance.post('users/', credentials);
@@ -37,7 +40,7 @@ export const registerUser = (credentials) => {
 export const verifySteam = (profileUrl) => {
   return axiosInstance.post('users/user/actions/verify', profileUrl);
 };
-export const getProfilePicture = (profileUrl) => {
+export const getSteamProfile = (profileUrl) => {
   return axiosInstance.get(
     'users/user/actions/steamprofile',
     profileUrl
@@ -46,7 +49,7 @@ export const getProfilePicture = (profileUrl) => {
 export const HostGame = (title) => {
   return axiosInstance.post('reenit/scrims/', title);
 };
-export const getAvailableServers = () => {
+export const getAvailableLocations = () => {
   return axiosInstance.get('dathost/available/');
 };
 export const startServer = (serverID, current) => {

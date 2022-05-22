@@ -4,7 +4,7 @@ export const getCurrentToken = () => {
   return localStorage.getItem('Bearer') || null;
 };
 export const getCurrentUser = () => {
-  return jwt_decode(getCurrentToken()).username;
+  return jwt_decode(getCurrentToken());
 };
 export const setUser = () => {
   const token = getCurrentToken();

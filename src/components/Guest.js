@@ -12,7 +12,7 @@ const Guest = () => {
     return navigate('/signup');
   };
   return (
-    <Card sx={{ maxWidth: 345 }}>
+    <Card sx={{ maxWidth: 345, margin: 'auto', boxShadow: 'none' }}>
       {/* <CardMedia
                 component="img"
                 height="140"

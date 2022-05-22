@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-import { getAllUsers } from '../../api/requests';
+import { getAllUsers } from '../../../api/requests';
 
 import Board from './board';
 

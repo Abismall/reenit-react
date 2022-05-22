@@ -30,17 +30,12 @@ export const Register = ({ isRegistered }) => {
     if (event.target.id === 'passwordConfirmation') {
       userProfile.passwordConfirmation = event.target.value;
     }
-    if (event.target.id === 'steam64') {
-      userProfile.steam64 = event.target.value;
-    }
   };
   const handleSubmit = (event) => {
     if (userProfile.password === userProfile.passwordConfirmation) {
-      console.log(userProfile);
       registerUser({
         username: userProfile.username,
         password: userProfile.password,
-        steam64: userProfile.steam64,
       }).then((res) => {
         if (res) {
           isRegistered(true);
@@ -76,12 +71,6 @@ export const Register = ({ isRegistered }) => {
               label="Confirm password"
               variant="outlined"
               type="password"
-            />
-            <TextField
-              onChange={handleChange}
-              id="steam64"
-              label="steam profile page url"
-              variant="outlined"
             />
           </Item>
 
