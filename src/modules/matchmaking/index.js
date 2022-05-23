@@ -51,14 +51,17 @@ const Lobby = () => {
       const userData = await getUser();
       if (userData != null) {
         setCurrentUser(userData);
+      }
+      if (steamProfile === false) {
         const steamProfile = await getSteamProfile();
+        console.log(steamProfile);
         if (steamProfile != null) {
           setProfile(steamProfile);
         } else {
           setProfile(false);
         }
-        setLoaded(true);
       }
+      setLoaded(true);
     }
   };
   const reloadData = async () => {
