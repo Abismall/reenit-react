@@ -34,7 +34,6 @@ export const updateUser = (update) => {
   return axiosInstance.put('/users/', update);
 };
 export const registerUser = (credentials) => {
-  console.log(credentials);
   return axiosInstance.post('users/', credentials);
 };
 export const verifySteam = (profileUrl) => {

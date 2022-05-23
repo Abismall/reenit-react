@@ -1,5 +1,4 @@
-import { useState, useEffect, useReducer } from 'react';
-import { useNavigate } from 'react-router';
+import { useState, useEffect } from 'react';
 import {
   getAllCurrentGames,
   getCurrentGame,
@@ -10,7 +9,6 @@ import {
   HostGame,
   getAvailableLocations,
 } from '../../api/requests';
-import SettingsDrawer from '../../components/SettingsDrawer';
 import { setUser } from '../../utils';
 import ActiveGame from './game';
 import Sidebar from '../../components/Sidebar';
@@ -38,7 +36,6 @@ const Lobby = () => {
   const [availableLocations, setAvailableLocations] = useState([]);
   const [currentView, setView] = useState('Lobby');
   const [change, setChange] = useState(false);
-  let navigate = useNavigate();
 
   useEffect(() => {
     setChange(false);
@@ -50,7 +47,7 @@ const Lobby = () => {
 
   const loadUser = async () => {
     const user = setUser();
-    if (user == true) {
+    if (user === true) {
       const userData = await getUser();
       if (userData != null) {
         setCurrentUser(userData);
@@ -65,23 +62,24 @@ const Lobby = () => {
     }
   };
   const reloadData = async () => {
+    const serverList = await getAllCurrentGames();
+    if (serverList) {
+      setActiveGames(serverList);
+    } else {
+      setActiveGames([]);
+    }
     const currentGame = await getCurrentGame();
     if (currentGame) {
       setCurrentGame(currentGame);
-      const locationList = await getAvailableLocations();
-      if (
-        locationList &&
-        currentGame !== false &&
-        locationList.length > 0
-      ) {
-        setAvailableLocations(locationList);
-      }
-    } else {
-      const serverList = await getAllCurrentGames();
-      if (serverList && serverList.length > 0) {
-        setActiveGames(serverList);
-      } else {
-        setActiveGames([]);
+      if (currentGame.lobby.owner_id === currentUser.id) {
+        const locationList = await getAvailableLocations();
+        if (
+          locationList &&
+          currentGame !== false &&
+          locationList.length > 0
+        ) {
+          setAvailableLocations(locationList);
+        }
       }
     }
   };
