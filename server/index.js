@@ -4,6 +4,7 @@ import {
   getGameById,
   getAvailableLocations,
 } from './api/requests.js';
+
 import express from 'express';
 
 const app = express();
@@ -33,8 +34,11 @@ io.on('connection', async (socket) => {
   // ON GET CURRENT
   socket.on('update', async (room) => {
     const update = await getGameById(room);
+    if (update) {
+      io.to(room).emit('refreshCurrentGame', update);
+    }
+
     //socket.broadcast.to(room).emit('refreshCurrentGame', update);
-    io.to(room).emit('refreshCurrentGame', update);
   });
   // ON JOIN
   socket.on('setCurrentRoom', (room) => {
@@ -43,7 +47,9 @@ io.on('connection', async (socket) => {
   // ON GET AVAILABLE LOCATIONS
   socket.on('getLocations', async () => {
     const locationList = await getAvailableLocations();
-    socket.emit('setLocations', locationList);
+    if (locationList) {
+      socket.emit('setLocations', locationList);
+    }
   });
 });
 
