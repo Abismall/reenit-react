@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-
+import React, { useState, useContext } from 'react';
+import { CTX } from '../store';
 import User from './User';
 import Guest from './Guest';
 import UserPanel from './UserPanel';
@@ -8,14 +8,8 @@ import SettingsDrawer from './SettingsDrawer';
 import Paper from '@mui/material/Paper';
 
 const Sidebar = (props) => {
+  const { state } = useContext(CTX);
   const [isOpen, setOpen] = useState(false);
-  const {
-    loadUser,
-    setView,
-    steamProfile,
-    profileLoaded,
-    currentUser,
-  } = props;
   const toggleDrawer = (isOpen) => (event) => {
     console.log(event);
     if (
@@ -30,25 +24,11 @@ const Sidebar = (props) => {
 
   return (
     <Paper style={{ marginTop: 350 }}>
-      {profileLoaded ? (
-        <User user={currentUser} steamProfile={steamProfile} />
-      ) : (
-        <Guest />
+      {state.currentUser ? <User /> : <Guest />}
+      {state.currentUser && (
+        <UserPanel toggleDrawer={toggleDrawer} isOpen={isOpen} />
       )}
-      {profileLoaded && (
-        <UserPanel
-          toggleDrawer={toggleDrawer}
-          isOpen={isOpen}
-          setView={setView}
-        />
-      )}
-      <SettingsDrawer
-        toggleDrawer={toggleDrawer}
-        isOpen={isOpen}
-        currentUser={currentUser}
-        steamProfile={steamProfile}
-        loadUser={loadUser}
-      />
+      <SettingsDrawer toggleDrawer={toggleDrawer} isOpen={isOpen} />
     </Paper>
   );
 };

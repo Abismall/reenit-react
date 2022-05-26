@@ -1,9 +1,13 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { setUser } from '../../../utils';
 
 import { loginUser } from '../../../api/requests';
 import { axiosInstance } from '../../../api/config';
+import { getUser, getSteamProfile } from '../../../api/requests';
+
+import { CTX } from '../../../store';
+
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import { styled } from '@mui/material/styles';
@@ -21,6 +25,8 @@ export const Login = () => {
   let navigate = useNavigate();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const { dispatch } = useContext(CTX);
+
   useEffect(() => {
     let user = setUser();
     if (user) {
@@ -34,23 +40,25 @@ export const Login = () => {
     setPassword(event.target.value);
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     const formData = new FormData();
     //Prevent page reload
     event.preventDefault();
-
     formData.set('username', username);
     formData.set('password', password);
-    loginUser(formData)
-      .then((res) => {
-        if (res) {
-          localStorage.setItem('Bearer', res.token);
-          axiosInstance.defaults.headers.common['Authorization'] =
-            'bearer ' + res.token;
-          return navigate('/');
-        }
-      })
-      .catch((err) => {});
+    const res = await loginUser(formData);
+    if (res != null) {
+      localStorage.setItem('Bearer', res.token);
+      axiosInstance.defaults.headers.common['Authorization'] =
+        'bearer ' + res.token;
+      const userData = await getUser();
+      if (userData != null) {
+        dispatch({ type: 'LOG_IN', payload: userData });
+        const steamProfile = await getSteamProfile();
+        dispatch({ type: 'SET_STEAM', payload: steamProfile });
+        navigate('/');
+      }
+    }
   };
   return (
     <Box sx={{ flexGrow: 1 }}>

@@ -110,7 +110,7 @@ export const LobbyListColumns = [
   {
     field: 'title',
     headerName: 'Game',
-    width: 150,
+    width: 100,
   },
   {
     field: 'current_map',
@@ -118,18 +118,23 @@ export const LobbyListColumns = [
     width: 150,
   },
   {
+    field: 'player_count',
+    headerName: 'players',
+    width: 80,
+  },
+  {
     field: 'team_damage',
     headerName: 'team damage',
-    width: 150,
+    width: 100,
   },
   {
     field: 'overtime',
     headerName: 'overtime',
-    width: 150,
+    width: 80,
   },
   {
     field: 'active',
     headerName: 'Active',
-    width: 150,
+    width: 80,
   },
 ];

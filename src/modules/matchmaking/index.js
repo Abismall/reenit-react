@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useContext } from 'react';
 import {
   getAllCurrentGames,
   getCurrentGame,
@@ -7,9 +7,10 @@ import {
   updateLobby,
   joinLobby,
   HostGame,
-  getAvailableLocations,
+  getUser,
+  getSteamProfile,
 } from '../../api/requests';
-import { setUser } from '../../utils';
+
 import ActiveGame from './game';
 import Sidebar from '../../components/Sidebar';
 import { LobbyList } from './lobbyList';
@@ -18,7 +19,9 @@ import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
 import { styled } from '@mui/material/styles';
 import ScoreBoard from './scoreboard';
-import { getUser, getSteamProfile } from '../../api/requests';
+import { setUser } from '../../utils';
+import { CTX } from '../../store';
+
 const Item = styled(Paper)(({ theme }) => ({
   ...theme.typography.body2,
   padding: theme.spacing(1),
@@ -28,137 +31,113 @@ const Item = styled(Paper)(({ theme }) => ({
 }));
 
 const Lobby = () => {
-  const [currentUser, setCurrentUser] = useState({});
-  const [profileLoaded, setLoaded] = useState(false);
-  const [steamProfile, setProfile] = useState(false);
-  const [activeGames, setActiveGames] = useState([]);
-  const [currentGame, setCurrentGame] = useState(false);
-  const [availableLocations, setAvailableLocations] = useState([]);
-  const [currentView, setView] = useState('Lobby');
-  const [change, setChange] = useState(false);
-
+  const {
+    state,
+    setCurrentGame,
+    refreshCurrent,
+    getLocations,
+    dispatch,
+  } = useContext(CTX);
   useEffect(() => {
-    setChange(false);
-    reloadData();
-  }, [change]);
-  useEffect(() => {
-    loadUser();
+    onReload();
   }, []);
-
-  const loadUser = async () => {
-    const user = setUser();
-    if (user === true) {
-      const userData = await getUser();
-      if (userData != null) {
-        setCurrentUser(userData);
+  useEffect(() => {
+    setCurrent();
+  }, []);
+  const onReload = async () => {
+    setUser();
+    await getLocations();
+    const userData = await getUser();
+    if (userData != null) {
+      dispatch({ type: 'LOG_IN', payload: userData });
+      const steamProfile = await getSteamProfile();
+      if (steamProfile) {
+        dispatch({ type: 'SET_STEAM', payload: steamProfile });
       }
-      if (steamProfile === false) {
-        const steamProfile = await getSteamProfile();
-        console.log(steamProfile);
-        if (steamProfile != null) {
-          setProfile(steamProfile);
-        } else {
-          setProfile(false);
-        }
-      }
-      setLoaded(true);
+      const listOfGames = await getAllCurrentGames();
+      dispatch({ type: 'SET_LOBBY_LIST', payload: listOfGames });
     }
   };
-  const reloadData = async () => {
-    const serverList = await getAllCurrentGames();
-    if (serverList) {
-      setActiveGames(serverList);
-    } else {
-      setActiveGames([]);
-    }
+
+  const setCurrent = async () => {
     const currentGame = await getCurrentGame();
     if (currentGame) {
-      setCurrentGame(currentGame);
-      if (currentGame.lobby.owner_id === currentUser.id) {
-        const locationList = await getAvailableLocations();
-        if (
-          locationList &&
-          currentGame !== false &&
-          locationList.length > 0
-        ) {
-          setAvailableLocations(locationList);
-        }
-      }
+      setCurrentGame(currentGame.lobby.id);
+      dispatch({ type: 'SET_CURRENT_LOBBY', payload: currentGame });
     }
   };
 
-  const handleTeamSwitch = () => {
-    switchTeam();
-    setChange(true);
+  const handleTeamSwitch = async () => {
+    await switchTeam();
+    refreshCurrent(state.currentGame.lobby.id);
   };
-  const handleUpdateLobby = (data, reload) => {
-    updateLobby(data);
-    if (reload === true) {
-      setChange(true);
+  const handleUpdateLobby = async (data) => {
+    await updateLobby(data);
+    refreshCurrent(state.currentGame.lobby.id);
+  };
+  const handleMapChange = async (data) => {
+    await updateLobby(data);
+    refreshCurrent(state.currentGame.lobby.id);
+  };
+  const handleJoinLobby = async (data) => {
+    const currentGame = await getCurrentGame();
+    if (currentGame) {
+      setCurrent(currentGame.lobby.id);
+      setCurrentGame(currentGame.lobby.id);
+      dispatch({ type: 'SET_CURRENT_LOBBY', payload: currentGame });
+    } else {
+      await joinLobby({ title: data });
+      const newGame = await getCurrentGame();
+      setCurrentGame(newGame.lobby.id);
+      dispatch({ type: 'SET_CURRENT_LOBBY', payload: newGame });
     }
-  };
-  const handleMapChange = (data) => {
-    updateLobby(data);
-    setChange(true);
-  };
-  const handleJoinLobby = (data) => {
-    joinLobby({ title: data }).then(() => {
-      setChange(true);
-    });
+
+    return;
   };
   const handleLeaveLobby = async () => {
-    leaveLobby();
-    setCurrentGame(false);
-    setChange(true);
+    await leaveLobby();
+    dispatch({ type: 'SET_CURRENT_LOBBY', payload: false });
+    refreshCurrent(state.currentGame.lobby.id);
   };
-  const handleHostGame = (data) => {
-    HostGame(data).then(() => {
-      setChange(true);
-    });
+  const handleHostGame = async (data) => {
+    await HostGame(data);
+    const newGame = await getCurrentGame();
+    setCurrentGame(newGame.lobby.id);
+    dispatch({ type: 'SET_CURRENT_LOBBY', payload: newGame });
   };
 
   return (
     <Grid container spacing={3}>
       <Grid item xs={2}></Grid>
       <Grid item xs={6}>
-        {currentView === 'Lobby' && (
+        {state.UI === 'LOBBY' && (
           <Item style={{ paddingTop: '280px' }}>
-            {!currentGame && (
+            {!state.currentGame && (
               <GameCreator handleHostGame={handleHostGame} />
             )}
-            {currentGame ? (
+            {state.currentGame && state.locations ? (
               <ActiveGame
                 onSwitch={handleTeamSwitch}
                 handleUpdateLobby={handleUpdateLobby}
                 handleMapChange={handleMapChange}
                 handleJoinLobby={handleJoinLobby}
                 handleLeaveLobby={handleLeaveLobby}
-                current={currentGame}
-                available={availableLocations}
-                setChange={setChange}
               />
             ) : (
               <LobbyList
-                activeGames={activeGames}
                 handleJoinLobby={handleJoinLobby}
               ></LobbyList>
             )}
           </Item>
         )}
-        {currentView === 'Scoreboard' && (
+        {state.UI === 'SCOREBOARD' && (
           <Item style={{ paddingTop: '280px' }}>
             <ScoreBoard />
           </Item>
         )}
       </Grid>
       <Grid item xs>
-        <Sidebar
-          loadUser={loadUser}
-          setView={setView}
-          profileLoaded={profileLoaded}
-          steamProfile={steamProfile}
-          currentUser={currentUser}
-        />
+        <Sidebar />
       </Grid>
     </Grid>
   );

@@ -11,32 +11,27 @@ import { movePlayers } from '../../../../api/requests';
 
 import { AvailableDropDown } from '../server';
 
-export const Settings = ({
-  settings,
-  handleUpdateLobby,
-  handleMapChange,
-  available,
-  location,
-  setLocation,
-  setChange,
-}) => {
-  const {
-    current: { lobby },
-  } = settings;
+import { useContext } from 'react';
+import { CTX } from '../../../../store';
+
+export const Settings = ({ handleUpdateLobby }) => {
+  const { state } = useContext(CTX);
   const [selection, setSelection] = useState([]);
   const SettingsColumns = settingsColumns;
 
   const handleOnClick = (e) => {
     if (e.target.id === 'teamDamage') {
-      lobby.team_damage = !lobby.team_damage;
+      state.currentGame.lobby.team_damage =
+        !state.currentGame.lobby.team_damage;
     }
     if (e.target.id === 'overtime') {
-      lobby.overtime = !lobby.overtime;
+      state.currentGame.lobby.overtime =
+        !state.currentGame.lobby.overtime;
     }
     if (e.target.id === 'move') {
       movePlayers(selection);
     }
-    handleUpdateLobby(lobby, true);
+    handleUpdateLobby(state.currentGame.lobby);
   };
   const handleOnSelectionChange = (e) => {
     if (e) {
@@ -47,21 +42,22 @@ export const Settings = ({
   return (
     <div style={{ height: '400px', width: '100%' }}>
       <Button onClick={handleOnClick} id="overtime">
-        {lobby.overtime ? 'disable OT' : 'enable OT'}
+        {state.currentGame.lobby.overtime
+          ? 'disable OT'
+          : 'enable OT'}
       </Button>
       <Button onClick={handleOnClick} id="teamDamage">
-        {lobby.team_damage ? 'disable ff' : 'enable ff'}
+        {state.currentGame.lobby.team_damage
+          ? 'disable ff'
+          : 'enable ff'}
       </Button>
       <MapDropDown
-        current={lobby}
+        current={state.currentGame.lobby}
         handleUpdateLobby={handleUpdateLobby}
       />
-      <AvailableDropDown
-        available={available}
-        location={location}
-        setLocation={setLocation}
-        setChange={setChange}
-      />
+      {state.currentGame.lobby.server_id === '' && (
+        <AvailableDropDown handleUpdateLobby={handleUpdateLobby} />
+      )}
       {selection.length > 0 && (
         <Button
           onClick={handleOnClick}
@@ -72,7 +68,7 @@ export const Settings = ({
         </Button>
       )}
       <DataGrid
-        rows={settings.current.Players}
+        rows={state.currentGame.Players}
         columns={SettingsColumns}
         pageSize={5}
         rowsPerPageOptions={[5]}

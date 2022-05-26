@@ -15,11 +15,7 @@ export const Team = (props) => {
             <Tooltip
               placement="top"
               key={player.steam64}
-              title={
-                player.steam64
-                  ? `${process.env.PROFILEBASEURL}${player.steam64}`
-                  : null
-              }
+              title={player.steam64 ? `${player.steam64}` : null}
             >
               <ListItem
                 style={{

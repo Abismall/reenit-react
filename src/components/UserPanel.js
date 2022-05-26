@@ -10,14 +10,17 @@ import ListItemButton from '@mui/material/ListItemButton';
 
 // MUI
 
+import { CTX } from '../store';
+import { useContext } from 'react';
 const UserPanel = (props) => {
-  const { toggleDrawer, isOpen, setView } = props;
+  const { toggleDrawer, isOpen } = props;
+  const { state, dispatch } = useContext(CTX);
   const handleOnClick = (e) => {
     if (e.target.outerText === 'Lobby') {
-      setView('Lobby');
+      dispatch({ type: 'SET_UI', payload: 'LOBBY' });
     }
     if (e.target.outerText === 'Scoreboard') {
-      setView('Scoreboard');
+      dispatch({ type: 'SET_UI', payload: 'SCOREBOARD' });
     }
   };
   return (

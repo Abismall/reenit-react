@@ -4,34 +4,35 @@ import Typography from '@mui/material/Typography';
 import { Team } from './team';
 import { Settings } from './settings';
 import { Launcher } from './launcher';
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { getCurrentUser } from '../../../utils';
+import { CTX } from '../../../store';
 const ActiveGame = (props) => {
   const {
-    current,
     onSwitch,
     handleUpdateLobby,
     handleMapChange,
     handleJoinLobby,
     handleLeaveLobby,
-    available,
     setChange,
   } = props;
-  const [location, setLocation] = useState('');
-  const [isReady, setReady] = useState(false);
-  const baseUrl = 'www.turlenfanikerho.com/aulat/';
+  const { state } = useContext(CTX);
+
   const handleOnClick = () => {
-    setReady(true);
+    state.currentGame.lobby.active = true;
+    handleUpdateLobby(state.currentGame.lobby);
   };
 
   return (
     <React.Fragment>
       <Typography variant="h4" textAlign="center">
-        {baseUrl + current.lobby.title}
+        {`${state.currentGame.lobby.title.toUpperCase()} [${
+          state.currentGame.Players.length
+        }]`}
       </Typography>
-      <Team team={current.team_two} />
-      <Team team={current.team_one} />
-      {!isReady && (
+      <Team team={state.currentGame.team_two} />
+      <Team team={state.currentGame.team_one} />
+      {!state.currentGame.lobby.active && (
         <Button
           onClick={() => {
             onSwitch();
@@ -41,17 +42,18 @@ const ActiveGame = (props) => {
           Switch team
         </Button>
       )}
-      {current.Players.length <= 10 && !isReady && (
-        <Button
-          onClick={() => {
-            handleJoinLobby(current.lobby.title);
-          }}
-          style={{ color: 'green' }}
-        >
-          Join
-        </Button>
-      )}
-      {!isReady && (
+      {state.currentGame.Players.length <= 10 &&
+        !state.currentGame.lobby.active && (
+          <Button
+            onClick={() => {
+              handleJoinLobby(state.currentGame.lobby.title);
+            }}
+            style={{ color: 'green' }}
+          >
+            Join
+          </Button>
+        )}
+      {!state.currentGame.lobby.active && (
         <Button
           onClick={() => {
             handleLeaveLobby();
@@ -61,28 +63,24 @@ const ActiveGame = (props) => {
           Leave
         </Button>
       )}
-      {!isReady &&
-        current.lobby.owner_id == getCurrentUser().user_id && (
+      {!state.currentGame.lobby.active &&
+        state.currentGame.lobby.owner_id ===
+          getCurrentUser().user_id && (
           <Button onClick={handleOnClick}>Launch</Button>
         )}
-      {isReady && (
+      {state.currentGame.lobby.active && (
         <Launcher
-          location={location}
-          isReady={isReady}
-          available={available}
-          current={current}
+          current={state.currentGame}
           handleUpdateLobby={handleUpdateLobby}
         />
       )}
-      {!isReady &&
-        current.lobby.owner_id == getCurrentUser().user_id && (
+      {!state.currentGame.lobby.active &&
+        state.currentGame.lobby.owner_id ===
+          getCurrentUser().user_id && (
           <Settings
-            settings={{ current }}
+            settings={state.currentGame}
             handleUpdateLobby={handleUpdateLobby}
             handleMapChange={handleMapChange}
-            available={available}
-            location={location}
-            setLocation={setLocation}
             setChange={setChange}
           />
         )}

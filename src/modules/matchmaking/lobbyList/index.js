@@ -1,23 +1,24 @@
 import { DataGrid } from '@mui/x-data-grid';
-import { useState } from 'react';
+import { useState, useContext } from 'react';
+import { CTX } from '../../../store';
 import { LobbyListColumns } from '../../../utils';
 import Button from '@mui/material/Button';
 
 export const LobbyList = (props) => {
-  const { activeGames, handleJoinLobby } = props;
+  const { handleJoinLobby } = props;
+  const { state } = useContext(CTX);
   const [selected, setSelected] = useState(false);
   const handleOnClick = (e) => {
-    if (e.row.active === false) {
-      setSelected(e.row.title);
-    }
+    setSelected(e.row.title);
   };
   const handleFocusOut = (e) => {
+    e.row.active = false;
     setSelected(false);
   };
   return (
     <div style={{ height: 400, width: '100%' }}>
       <DataGrid
-        rows={activeGames}
+        rows={state.lobbyList ? state.lobbyList : []}
         columns={LobbyListColumns}
         pageSize={5}
         LoadingOverlay={true}

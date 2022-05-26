@@ -1,22 +1,20 @@
 import { timeAgo } from '../utils';
-
+import { useContext } from 'react';
+import { CTX } from '../store';
 // MUI
 import Card from '@mui/material/Card';
 import Avatar from '@mui/material/Avatar';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
-const User = (props) => {
-  const {
-    user: { username, id, steam64, created_at },
-    steamProfile,
-  } = props;
+const User = () => {
+  const { state } = useContext(CTX);
   return (
     <Card sx={{ maxWidth: 445, margin: 'auto', boxShadow: 'none' }}>
       <Box sx={{ p: 4, display: 'flex' }}>
-        {steamProfile && (
+        {state.steamProfile && (
           <Avatar
-            src={steamProfile.avatarfull}
+            src={state.steamProfile.avatarfull}
             style={{ width: '80px', height: '80px' }}
           />
         )}
@@ -25,16 +23,18 @@ const User = (props) => {
             fontWeight={700}
             style={{ textAlign: 'center' }}
           >
-            {steamProfile ? steamProfile.personaname : username}
+            {state.steamProfile
+              ? state.steamProfile.personaname
+              : state.currentUser.username}
           </Typography>
           <Typography
             fontWeight={700}
             style={{ margin: '0px 35px 0px 50px' }}
           >
-            {steamProfile ? steamProfile.steamid : steam64}
+            {state.steamProfile ? state.steamProfile.steamid : null}
           </Typography>
           <Typography fontWeight={800}>
-            150kg sonni since {timeAgo(created_at)}
+            150kg sonni since {timeAgo(state.currentUser.created)}
           </Typography>
         </Stack>
       </Box>

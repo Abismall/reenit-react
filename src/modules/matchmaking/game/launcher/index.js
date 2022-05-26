@@ -2,33 +2,45 @@ import Paper from '@mui/material/Paper';
 import CircularProgress from '@mui/material/CircularProgress';
 import Button from '@mui/material/Button';
 
-import { useState, useEffect } from 'react';
-
+import { useState, useEffect, useContext } from 'react';
+import { CTX } from '../../../../store';
 import { startServer, getServerData } from '../../../../api/requests';
 
-export const Launcher = ({
-  location,
-  current,
-  handleUpdateLobby,
-}) => {
+export const Launcher = ({ handleUpdateLobby }) => {
   const [isLaunched, setLaunched] = useState(false);
   const [isCrashed, setCrashed] = useState(false);
+  const [booting, setBooting] = useState(false);
   const [serverInfo, setInfo] = useState({});
+  const { state } = useContext(CTX);
   useEffect(() => {
     initialize();
   }, []);
   const initialize = async () => {
-    await startServer(location, current);
-    const serverData = await getServerData(location);
-    if (serverData != null) {
-      current.lobby.active = true;
-      console.log(current);
-      handleUpdateLobby(current.lobby, false);
-      setInfo(serverData);
-      setLaunched(true);
-    } else {
+    if (
+      state.currentGame.lobby.server_address === false ||
+      booting === true
+    ) {
+      setCrashed(false);
       setLaunched(false);
-      setCrashed(true);
+      await startServer(
+        state.currentGame.lobby.server_id,
+        state.currentGame
+      );
+      const serverData = await getServerData(
+        state.currentGame.lobby.server_id
+      );
+      if (serverData !== null) {
+        setInfo(serverData);
+        state.currentGame.lobby.server_address = serverData;
+        await handleUpdateLobby(state.currentGame.lobby);
+        setLaunched(true);
+      } else {
+        setLaunched(false);
+        setCrashed(true);
+      }
+    } else {
+      setLaunched(true);
+      setInfo(state.currentGame.lobby.server_address);
     }
   };
   const grabAddress = () => {
@@ -37,6 +49,9 @@ export const Launcher = ({
     navigator.clipboard.writeText(copyText.value);
   };
   const handleReboot = () => {
+    setCrashed(false);
+    setLaunched(false);
+    setBooting(true);
     initialize();
   };
   const ConnectInfo = () => {
@@ -54,13 +69,13 @@ export const Launcher = ({
           value={`connect ${serverInfo.ip}:${serverInfo.ports.game}`}
           id="server-info"
         ></input>
+        <RebootServer />
       </div>
     );
   };
   const RebootServer = () => {
     return (
       <div>
-        <p>Error launching the server.</p>
         <Button onClick={handleReboot}> REBOOT </Button>
       </div>
     );
