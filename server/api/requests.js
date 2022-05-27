@@ -24,9 +24,10 @@ export const axiosInstance = axios.create({
 });
 axiosInstance.interceptors.response.use(
   (res) => res.data,
-  (err) =>
-    logger.log({ level: 'error', format: err.message }) &&
-    console.log(err)
+  (err) => {
+    logger.log({ level: 'error', message: err });
+    console.log(err);
+  }
 );
 export const getGameById = (id) => {
   return axiosInstance.get(`/reenit/scrims/${id}`);

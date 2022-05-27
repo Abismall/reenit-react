@@ -6,6 +6,10 @@ export const getCurrentToken = () => {
 export const getCurrentUser = () => {
   return jwt_decode(getCurrentToken());
 };
+export const resetUser = () => {
+  localStorage.removeItem('Bearer');
+  delete axiosInstance.defaults.headers.common['Authorization'];
+};
 export const setUser = () => {
   const token = getCurrentToken();
   if (token != null) {

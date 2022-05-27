@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { resetUser } from '../utils';
 export const baseUrl = 'http://127.0.0.1:8000/';
 
 const axiosInstance = axios.create({
@@ -6,7 +7,11 @@ const axiosInstance = axios.create({
 });
 axiosInstance.interceptors.response.use(
   (res) => res.data,
-  (err) => console.error(err)
+  (err) => {
+    if (err.response.status === 403) {
+      resetUser();
+    }
+  }
 );
 
 export { axiosInstance };

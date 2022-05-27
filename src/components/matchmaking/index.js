@@ -1,3 +1,4 @@
+import css from '../../App.css';
 import { useEffect, useContext } from 'react';
 import {
   getAllCurrentGames,
@@ -15,6 +16,7 @@ import ActiveGame from './game';
 import Sidebar from '../../components/Sidebar';
 import { LobbyList } from './lobbyList';
 import GameCreator from '../../components/GameCreator';
+import Banner from '../../components/Banner';
 import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
 import { styled } from '@mui/material/styles';
@@ -36,6 +38,7 @@ const Lobby = () => {
     setCurrentGame,
     refreshCurrent,
     getLocations,
+    loadChat,
     dispatch,
   } = useContext(CTX);
   useEffect(() => {
@@ -46,16 +49,20 @@ const Lobby = () => {
   }, []);
   const onReload = async () => {
     setUser();
+    loadChat();
     await getLocations();
     const userData = await getUser();
     if (userData != null) {
       dispatch({ type: 'LOG_IN', payload: userData });
+      dispatch({ type: 'SET_ERRORS', payload: null });
       const steamProfile = await getSteamProfile();
       if (steamProfile) {
         dispatch({ type: 'SET_STEAM', payload: steamProfile });
+        dispatch({ type: 'SET_ERRORS', payload: null });
       }
       const listOfGames = await getAllCurrentGames();
       dispatch({ type: 'SET_LOBBY_LIST', payload: listOfGames });
+      dispatch({ type: 'SET_ERRORS', payload: null });
     }
   };
 
@@ -64,6 +71,7 @@ const Lobby = () => {
     if (currentGame) {
       setCurrentGame(currentGame.lobby.id);
       dispatch({ type: 'SET_CURRENT_LOBBY', payload: currentGame });
+      dispatch({ type: 'SET_ERRORS', payload: null });
     }
   };
 
@@ -85,11 +93,14 @@ const Lobby = () => {
       setCurrent(currentGame.lobby.id);
       setCurrentGame(currentGame.lobby.id);
       dispatch({ type: 'SET_CURRENT_LOBBY', payload: currentGame });
+      dispatch({ type: 'SET_ERRORS', payload: null });
     } else {
       await joinLobby({ title: data });
       const newGame = await getCurrentGame();
       setCurrentGame(newGame.lobby.id);
       dispatch({ type: 'SET_CURRENT_LOBBY', payload: newGame });
+      dispatch({ type: 'SET_ROOM_CHAT', payload: [] });
+      dispatch({ type: 'SET_ERRORS', payload: null });
     }
 
     return;
@@ -104,14 +115,17 @@ const Lobby = () => {
     const newGame = await getCurrentGame();
     setCurrentGame(newGame.lobby.id);
     dispatch({ type: 'SET_CURRENT_LOBBY', payload: newGame });
+    dispatch({ type: 'SET_ROOM_CHAT', payload: [] });
+    dispatch({ type: 'SET_ERRORS', payload: null });
   };
 
   return (
     <Grid container spacing={3}>
+      <Banner />
       <Grid item xs={2}></Grid>
       <Grid item xs={6}>
         {state.UI === 'LOBBY' && (
-          <Item style={{ paddingTop: '280px' }}>
+          <Item style={{ paddingTop: '130px' }}>
             {!state.currentGame && (
               <GameCreator handleHostGame={handleHostGame} />
             )}
@@ -131,7 +145,7 @@ const Lobby = () => {
           </Item>
         )}
         {state.UI === 'SCOREBOARD' && (
-          <Item style={{ paddingTop: '280px' }}>
+          <Item style={{ paddingTop: '130px' }}>
             <ScoreBoard />
           </Item>
         )}

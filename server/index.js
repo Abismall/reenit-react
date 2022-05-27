@@ -16,7 +16,9 @@ const io = new Server(httpServer, {
     methods: ['GET', 'POST'],
   },
 });
-let allOnlineUsers = {};
+const allOnlineUsers = {};
+const chat = [];
+const roomChat = {};
 
 app.get('/', (req, res) => {
   res.send('<h1>Hello world</h1>');
@@ -49,6 +51,26 @@ io.on('connection', async (socket) => {
     const locationList = await getAvailableLocations();
     if (locationList) {
       socket.emit('setLocations', locationList);
+    }
+  });
+  // ON LOAD CHAT
+  socket.on('loadChat', function () {
+    socket.emit('chatMessage', chat, null);
+  });
+  // ON CHAT MESSAGE
+  socket.on('chatMessage', function (message, room) {
+    if (room == null) {
+      chat.push(message);
+      socket.emit('chatMessage', chat, null);
+      socket.broadcast.emit('chatMessage', chat, null);
+    } else {
+      socket.join(room);
+      if (!roomChat[room]) {
+        roomChat[room] = [];
+      }
+      roomChat[room].push(message);
+      socket.emit('chaMessage', roomChat[room], room);
+      io.to(room).emit('chatMessage', roomChat[room], room);
     }
   });
 });

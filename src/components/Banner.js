@@ -1,15 +1,16 @@
 // MUI
 import Paper from '@mui/material/Paper';
-import backGround from '../assets/images/vecteezy_retro-futurism-background_rd0221-01_generated.jpg';
+import backGround from '../assets/images/reenitLogo.png';
 
 const Banner = () => {
   return (
     <Paper
       style={{
-        textALign: 'center',
-        border: '2px solid red',
+        display: 'flex',
+        alignItems: 'center',
         width: '100%',
         height: '100%',
+        boxShadow: 'none',
       }}
     >
       {/* <video
@@ -21,10 +22,14 @@ const Banner = () => {
         playbackRate
         type="video/mp4"
       /> */}
-      {/* <img
-        style={{ width: '100%', height: '100%' }}
+      <img
+        style={{
+          width: '210px',
+          height: '210px',
+          margin: '10px auto auto auto',
+        }}
         src={backGround}
-      ></img> */}
+      ></img>
     </Paper>
   );
 };

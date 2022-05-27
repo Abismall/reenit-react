@@ -15,7 +15,11 @@ const User = () => {
         {state.steamProfile && (
           <Avatar
             src={state.steamProfile.avatarfull}
-            style={{ width: '80px', height: '80px' }}
+            style={{
+              width: '80px',
+              height: '80px',
+              border: '1px solid black',
+            }}
           />
         )}
         <Stack spacing={0.5}>

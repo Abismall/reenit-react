@@ -39,11 +39,11 @@ export const registerUser = (credentials) => {
 export const verifySteam = (profileUrl) => {
   return axiosInstance.post('users/user/actions/verify', profileUrl);
 };
-export const getSteamProfile = (profileUrl) => {
-  return axiosInstance.get(
-    'users/user/actions/steamprofile',
-    profileUrl
-  );
+export const getSteamProfile = () => {
+  return axiosInstance.get('users/user/actions/steamprofile');
+};
+export const getSteamProfileByID = (ID) => {
+  return axiosInstance.get(`users/user/actions/steamprofile/${ID}`);
 };
 export const HostGame = (title) => {
   return axiosInstance.post('reenit/scrims/', title);

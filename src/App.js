@@ -1,3 +1,4 @@
+import css from './App.css';
 import {
   BrowserRouter as Router,
   Routes,
@@ -7,9 +8,9 @@ import { Store } from './store';
 import backGround from './assets/images/Gaming0_generated.jpg';
 // NAV
 
-// MODULES
-import Lobby from './modules/matchmaking/';
-import SignUp from './modules/user/';
+// COMPONENTS
+import Lobby from './components/matchmaking/index';
+import SignUp from './components/user/index';
 
 function App() {
   return (
