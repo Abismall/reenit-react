@@ -8,6 +8,7 @@ export const AvailableDropDown = ({ handleUpdateLobby }) => {
   const handleOnChange = (e) => {
     state.currentGame.lobby.server_id = e.target.value;
     handleUpdateLobby(state.currentGame.lobby);
+    return;
   };
   return (
     <FormControl fullWidth>

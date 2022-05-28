@@ -7,11 +7,7 @@ const axiosInstance = axios.create({
 });
 axiosInstance.interceptors.response.use(
   (res) => res.data,
-  (err) => {
-    if (err.response.status === 403) {
-      resetUser();
-    }
-  }
+  (err) => err.response.status
 );
 
 export { axiosInstance };

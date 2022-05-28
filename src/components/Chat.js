@@ -12,11 +12,10 @@ import { useContext, useState, useRef, useEffect } from 'react';
 import { getCurrentUser, timeAgo } from '../utils';
 
 const Chat = () => {
-  const { state, dispatch, updateChat } = useContext(CTX);
+  const { state, updateChat } = useContext(CTX);
   const scrollRef = useRef(null);
   const [message, setMessage] = useState('');
-  const [currentChat, setCurrentChat] = useState([]);
-  const [view, setView] = useState('Global');
+  const [view, changeView] = useState('Global');
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollIntoView({ behaviour: 'smooth' });
@@ -24,11 +23,12 @@ const Chat = () => {
   }, [state.globalChat, view]);
   const handleOnClick = (e) => {
     if (e.target.id === 'global') {
-      setView('Global');
+      changeView('Global');
     }
     if (e.target.id === 'lobby') {
-      setView('Lobby');
+      changeView('Lobby');
     }
+    return;
   };
   const handleKeypress = (e) => {
     if (e.code === 'Enter') {
@@ -49,9 +49,9 @@ const Chat = () => {
           state.currentGame.lobby.title
         );
       }
-
       setMessage('');
     }
+    return;
   };
   return (
     <Box>

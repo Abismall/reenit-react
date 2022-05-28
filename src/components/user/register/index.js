@@ -1,9 +1,9 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 
 import { useNavigate } from 'react-router';
 
-import { registerUser, verifySteam } from '../../../api/requests';
-
+import { registerUser } from '../../../api/requests';
+import { CTX } from '../../../store';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import { styled } from '@mui/material/styles';
@@ -20,6 +20,7 @@ const Item = styled(Paper)(({ theme }) => ({
 export const Register = ({ isRegistered }) => {
   let navigate = useNavigate();
   const [userProfile, setProfile] = useState({});
+  const { dispatch, state } = useContext(CTX);
   const handleChange = (event) => {
     if (event.target.id === 'username') {
       userProfile.username = event.target.value;
@@ -36,13 +37,30 @@ export const Register = ({ isRegistered }) => {
       registerUser({
         username: userProfile.username,
         password: userProfile.password,
-      }).then((res) => {
-        if (res) {
-          isRegistered(true);
-          return navigate('/signup');
-        }
+      })
+        .then((res) => {
+          if (res) {
+            isRegistered(true);
+            return navigate('/signup');
+          }
+        })
+        .catch((err) => {
+          if (err === 422) {
+            dispatch({
+              type: 'SET_ERRORS',
+              payload: 'unaccessable property',
+            });
+          } else {
+            dispatch({ type: 'SET_ERRORS', payload: 'service down' });
+          }
+        });
+    } else {
+      dispatch({
+        type: 'SET_ERRORS',
+        payload: 'passwords do not match',
       });
     }
+    return;
   };
 
   return (
@@ -52,6 +70,7 @@ export const Register = ({ isRegistered }) => {
         <Grid item xs={6}>
           <Item style={{ paddingTop: '200px' }}>
             <TextField
+              style={{ padding: '10px' }}
               onChange={handleChange}
               id="username"
               label="Username"
@@ -59,6 +78,7 @@ export const Register = ({ isRegistered }) => {
             />
 
             <TextField
+              style={{ padding: '10px' }}
               onChange={handleChange}
               id="password"
               label="Password"
@@ -66,11 +86,13 @@ export const Register = ({ isRegistered }) => {
               type="password"
             />
             <TextField
+              style={{ padding: '10px' }}
               onChange={handleChange}
               id="passwordConfirmation"
               label="Confirm password"
               variant="outlined"
               type="password"
+              helperText={state.error}
             />
           </Item>
 

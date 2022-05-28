@@ -31,15 +31,22 @@ export default function SettingsDrawer({ toggleDrawer, isOpen }) {
     let update = {
       steam64: event.target.value,
     };
-    await updateUser(update);
-    const userData = await getUser();
-    dispatch({ type: 'LOG_IN', payload: userData });
-    const steamProfileData = await getSteamProfile();
-    dispatch({
-      type: 'SET_STEAM',
-      payload: steamProfileData,
-    });
-    dispatch({ type: 'SET_ERRORS', payload: null });
+    const res = await updateUser(update);
+    if (typeof res === 'object') {
+      const userData = await getUser();
+      dispatch({ type: 'LOG_IN', payload: userData });
+      const steamProfileData = await getSteamProfile();
+      dispatch({
+        type: 'SET_STEAM',
+        payload: steamProfileData,
+      });
+      dispatch({ type: 'SET_ERRORS', payload: null });
+    } else {
+      dispatch({
+        type: 'SET_ERRORS',
+        payload: 'steam64 is already in use',
+      });
+    }
   };
 
   const handleOnChange = (e) => {
@@ -48,6 +55,7 @@ export default function SettingsDrawer({ toggleDrawer, isOpen }) {
   };
   const handleOnClick = async (e) => {
     if (newProfile !== '') {
+      let found = false;
       for (
         var i = 0;
         i < state.currentUser.profile_list.length;
@@ -58,10 +66,11 @@ export default function SettingsDrawer({ toggleDrawer, isOpen }) {
             type: 'SET_ERRORS',
             payload: 'profile already exists',
           });
+          found = true;
           break;
         }
       }
-      if (!state.error) {
+      if (found === false) {
         const steamProfileData = await getSteamProfileByID(
           newProfile
         );
@@ -77,22 +86,32 @@ export default function SettingsDrawer({ toggleDrawer, isOpen }) {
               },
             ],
           };
-          await updateUser(update);
+          const res = await updateUser(update);
           const userData = await getUser();
-          dispatch({ type: 'LOG_IN', payload: userData });
-          dispatch({
-            type: 'SET_STEAM',
-            payload: steamProfileData,
-          });
-          dispatch({ type: 'SET_ERRORS', payload: null });
+          if (typeof res === 'object') {
+            dispatch({ type: 'LOG_IN', payload: userData });
+            dispatch({
+              type: 'SET_STEAM',
+              payload: steamProfileData,
+            });
+            dispatch({ type: 'SET_ERRORS', payload: null });
+          } else {
+            dispatch({
+              type: 'SET_ERRORS',
+              payload: 'steam64 is already in use',
+            });
+            return;
+          }
         } else {
           dispatch({
             type: 'SET_ERRORS',
             payload: 'invalid steam64',
           });
+          return;
         }
       }
     }
+    return;
   };
 
   return (
@@ -143,34 +162,38 @@ export default function SettingsDrawer({ toggleDrawer, isOpen }) {
             </FormControl>
           </Box>
 
-          {!state.error ? (
-            <TextField
-              onChange={handleOnChange}
-              id="username"
-              label="STEAM64"
-              variant="standard"
-            />
-          ) : (
-            <TextField
-              error
-              id="standard-error"
-              label="Error"
-              variant="standard"
-              helperText={state.error}
-            />
-          )}
-          <Fab
-            color="primary"
-            style={{
-              backgroundColor: newProfile === '' ? 'gray' : 'green',
-              margin: '20px 140px 0px 0px ',
-            }}
-            aria-label="add"
-            onClick={handleOnClick}
-          >
-            <AddIcon />
-          </Fab>
+          <TextField
+            style={{ marginBottom: '20px' }}
+            onChange={handleOnChange}
+            id="username"
+            label="STEAM64"
+            variant="standard"
+            helperText={state.error}
+            value={newProfile}
+          />
 
+          <div style={{ display: 'flex' }}>
+            <Fab
+              color="primary"
+              style={{
+                backgroundColor: newProfile === '' ? 'gray' : 'green',
+                margin: 'auto',
+              }}
+              aria-label="add"
+              onClick={handleOnClick}
+            >
+              <AddIcon />
+            </Fab>
+            <Button
+              style={{ margin: 'auto' }}
+              onClick={() => {
+                dispatch({ type: 'SET_ERRORS', payload: null });
+                setNewProfile('');
+              }}
+            >
+              Clear
+            </Button>
+          </div>
           <Tooltip title="Log out">
             <IconButton
               style={{

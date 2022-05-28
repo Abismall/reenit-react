@@ -25,7 +25,7 @@ export const Login = () => {
   let navigate = useNavigate();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const { dispatch } = useContext(CTX);
+  const { dispatch, state } = useContext(CTX);
 
   useEffect(() => {
     let user = setUser();
@@ -35,30 +35,44 @@ export const Login = () => {
   }, [navigate]);
   const handleChangeUname = (event) => {
     setUsername(event.target.value);
+    return;
   };
   const handleChangePass = (event) => {
     setPassword(event.target.value);
+    return;
   };
 
   const handleSubmit = async (event) => {
     const formData = new FormData();
-    //Prevent page reload
     event.preventDefault();
     formData.set('username', username);
     formData.set('password', password);
     const res = await loginUser(formData);
-    if (res != null) {
+    if (typeof res === 'object') {
       localStorage.setItem('Bearer', res.token);
       axiosInstance.defaults.headers.common['Authorization'] =
         'bearer ' + res.token;
       const userData = await getUser();
-      if (userData != null) {
+      if (typeof userData === 'object') {
         dispatch({ type: 'LOG_IN', payload: userData });
         const steamProfile = await getSteamProfile();
         dispatch({ type: 'SET_STEAM', payload: steamProfile });
         navigate('/');
       }
     }
+    if (res === 403) {
+      dispatch({
+        type: 'SET_ERRORS',
+        payload: 'invalid credentials',
+      });
+    }
+    if (res > 450) {
+      dispatch({
+        type: 'SET_ERRORS',
+        payload: 'internal server error',
+      });
+    }
+    return;
   };
   return (
     <Box sx={{ flexGrow: 1 }}>
@@ -67,17 +81,20 @@ export const Login = () => {
         <Grid item xs={6}>
           <Item style={{ paddingTop: '200px' }}>
             <TextField
+              style={{ padding: '10px' }}
               onChange={handleChangeUname}
               id="username"
               label="Username"
               variant="outlined"
             />
             <TextField
+              style={{ padding: '10px' }}
               onChange={handleChangePass}
               id="password"
               label="Password"
               variant="outlined"
               type="password"
+              helperText={state.error}
             />
           </Item>
           <Item>

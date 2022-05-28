@@ -19,6 +19,7 @@ export const SignUp = () => {
   const [isRegistered, setRegistered] = useState(true);
   const handleOnClick = () => {
     setRegistered(false);
+    return;
   };
   // useEffect(() => {
   //     setHasAuth(false);

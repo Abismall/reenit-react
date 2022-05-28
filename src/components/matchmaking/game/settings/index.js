@@ -32,11 +32,13 @@ export const Settings = ({ handleUpdateLobby }) => {
       movePlayers(selection);
     }
     handleUpdateLobby(state.currentGame.lobby);
+    return;
   };
   const handleOnSelectionChange = (e) => {
     if (e) {
       setSelection(e);
     }
+    return;
   };
 
   return (

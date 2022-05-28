@@ -10,10 +10,12 @@ export const LobbyList = (props) => {
   const [selected, setSelected] = useState(false);
   const handleOnClick = (e) => {
     setSelected(e.row.title);
+    return;
   };
   const handleFocusOut = (e) => {
     e.row.active = false;
     setSelected(false);
+    return;
   };
   return (
     <div style={{ height: 400, width: '100%' }}>

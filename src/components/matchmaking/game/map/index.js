@@ -8,6 +8,7 @@ export const MapDropDown = ({ current, handleUpdateLobby }) => {
   const handleOnChange = (e) => {
     current.current_map = e.target.value;
     handleUpdateLobby(current, true);
+    return;
   };
   return (
     <FormControl fullWidth>

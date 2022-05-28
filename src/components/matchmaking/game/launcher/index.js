@@ -42,6 +42,7 @@ export const Launcher = ({ handleUpdateLobby }) => {
       setLaunched(true);
       setInfo(state.currentGame.lobby.server_address);
     }
+    return;
   };
   const grabAddress = () => {
     var copyText = document.getElementById('server-info');
@@ -53,6 +54,7 @@ export const Launcher = ({ handleUpdateLobby }) => {
     setLaunched(false);
     setBooting(true);
     initialize();
+    return;
   };
   const ConnectInfo = () => {
     return (

@@ -6,6 +6,7 @@ const Banner = () => {
   return (
     <Paper
       style={{
+        paddingTop: '10px',
         display: 'flex',
         alignItems: 'center',
         width: '100%',
@@ -24,8 +25,8 @@ const Banner = () => {
       /> */}
       <img
         style={{
-          width: '210px',
-          height: '210px',
+          width: '120px',
+          height: '120px',
           margin: '10px auto auto auto',
         }}
         src={backGround}

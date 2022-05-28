@@ -3,6 +3,7 @@ import { Server } from 'socket.io';
 import {
   getGameById,
   getAvailableLocations,
+  removeUserFromLobby,
 } from './api/requests.js';
 
 import express from 'express';
@@ -17,6 +18,7 @@ const io = new Server(httpServer, {
   },
 });
 const allOnlineUsers = {};
+const inGame = {};
 const chat = [];
 const roomChat = {};
 
@@ -29,8 +31,12 @@ io.on('connection', async (socket) => {
   allOnlineUsers[socket.id] = socket.id;
 
   // ON DISCONNECT
-  socket.on('disconnect', () => {
+  socket.on('disconnect', async () => {
     console.log(`user disconnected`);
+    if (inGame[socket.id]) {
+      await removeUserFromLobby(inGame[socket.id].id);
+      delete inGame[socket.id];
+    }
     delete allOnlineUsers[socket.id];
   });
   // ON GET CURRENT
@@ -43,8 +49,9 @@ io.on('connection', async (socket) => {
     //socket.broadcast.to(room).emit('refreshCurrentGame', update);
   });
   // ON JOIN
-  socket.on('setCurrentRoom', (room) => {
+  socket.on('setCurrentRoom', (room, user) => {
     socket.join(room);
+    inGame[socket.id] = user;
   });
   // ON GET AVAILABLE LOCATIONS
   socket.on('getLocations', async () => {
@@ -60,6 +67,9 @@ io.on('connection', async (socket) => {
   // ON CHAT MESSAGE
   socket.on('chatMessage', function (message, room) {
     if (room == null) {
+      if (chat.length > 500) {
+        chat.length = 0;
+      }
       chat.push(message);
       socket.emit('chatMessage', chat, null);
       socket.broadcast.emit('chatMessage', chat, null);

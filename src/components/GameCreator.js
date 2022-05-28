@@ -9,9 +9,11 @@ const GameCreator = ({ handleHostGame }) => {
 
   const handleOnChange = (e) => {
     setGameTitle(e.target.value);
+    return;
   };
   const handleOnClick = (e) => {
     handleHostGame({ title: gameTitle });
+    return;
   };
   return (
     <div>

@@ -22,6 +22,7 @@ const UserPanel = (props) => {
     if (e.target.outerText === 'Scoreboard') {
       dispatch({ type: 'SET_UI', payload: 'SCOREBOARD' });
     }
+    return;
   };
   return (
     <List>

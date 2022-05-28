@@ -35,3 +35,6 @@ export const getGameById = (id) => {
 export const getAvailableLocations = () => {
   return axiosInstance.get('dathost/available/');
 };
+export const removeUserFromLobby = (id) => {
+  return axiosInstance.delete(`/reenit/${id}`);
+};

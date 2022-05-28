@@ -1,4 +1,6 @@
 import React from 'react';
+import { leaveLobby } from '../api/requests';
+import { useEffect } from 'react';
 export const CTX = React.createContext();
 
 const initialState = {
@@ -12,6 +14,7 @@ const initialState = {
 const io = require('socket.io-client');
 let socket;
 function reducer(state, action) {
+  console.log(action);
   switch (action.type) {
     case 'LOG_IN':
       return {
@@ -59,6 +62,13 @@ function reducer(state, action) {
         ...state,
         currentGame: action.payload,
       };
+    case 'SET_SOCKET':
+      return {
+        loading: false,
+        error: null,
+        ...state,
+        socket: action.payload,
+      };
     case 'SET_LOADING':
       return {
         loading: true,
@@ -91,29 +101,43 @@ function reducer(state, action) {
 
 const refreshCurrent = (room) => {
   socket.emit('update', room);
+  return;
 };
-const setCurrentGame = (room) => {
-  socket.emit('setCurrentRoom', room);
+const setCurrentGame = (room, user) => {
+  console.log(user);
+  socket.emit('setCurrentRoom', room, user);
+  return;
 };
 const getLocations = () => {
   socket.emit('getLocations');
+  return;
 };
 const loadChat = () => {
   socket.emit('loadChat');
+  return;
 };
 const updateChat = (message, room) => {
   socket.emit('chatMessage', message, room);
+  return;
 };
 export function Store(props) {
   const [state, dispatch] = React.useReducer(reducer, initialState);
+
   if (!socket) {
     socket = io(':5000');
   }
+  useEffect(() => {
+    dispatch({ type: 'SET_SOCKET', payload: socket.id });
+  }, [socket.id]);
   socket.on('refreshCurrentGame', function (data) {
     dispatch({ type: 'SET_CURRENT_LOBBY', payload: data });
+    return;
   });
   socket.on('setLocations', function (data) {
-    dispatch({ type: 'SET_LOCATIONS', payload: data });
+    if (typeof data === 'object') {
+      dispatch({ type: 'SET_LOCATIONS', payload: data });
+    }
+    return;
   });
   socket.on('chatMessage', function (data, room) {
     if (room == null) {
@@ -121,6 +145,13 @@ export function Store(props) {
     } else {
       dispatch({ type: 'SET_ROOM_CHAT', payload: data });
     }
+    return;
+  });
+  socket.on('leaveLobby', async (socket) => {
+    console.log(socket);
+    await leaveLobby();
+
+    return;
   });
 
   return (
