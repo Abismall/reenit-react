@@ -24,12 +24,13 @@ export const LobbyList = (props) => {
         columns={LobbyListColumns}
         pageSize={5}
         LoadingOverlay={true}
+        loading={state.loading}
         rowsPerPageOptions={[5]}
         hideFooterSelectedRowCount
         onCellClick={handleOnClick}
         onCellFocusOut={handleFocusOut}
       />
-      {selected && (
+      {selected && state.currentUser && (
         <Button
           style={{ backgroundColor: 'green', color: 'white' }}
           onClick={() => handleJoinLobby(selected)}

@@ -14,11 +14,9 @@ const initialState = {
 const io = require('socket.io-client');
 let socket;
 function reducer(state, action) {
-  console.log(action);
   switch (action.type) {
     case 'LOG_IN':
       return {
-        loading: false,
         error: null,
         ...state,
         currentUser: {
@@ -36,46 +34,41 @@ function reducer(state, action) {
 
     case 'SET_STEAM':
       return {
-        loading: false,
         error: null,
         ...state,
         steamProfile: action.payload,
       };
     case 'SET_LOCATIONS':
       return {
-        loading: false,
         error: null,
         ...state,
         locations: action.payload,
       };
     case 'SET_LOBBY_LIST':
       return {
-        loading: false,
         error: null,
         ...state,
         lobbyList: action.payload,
       };
     case 'SET_CURRENT_LOBBY':
       return {
-        loading: false,
         error: null,
         ...state,
         currentGame: action.payload,
       };
     case 'SET_SOCKET':
       return {
-        loading: false,
         error: null,
         ...state,
         socket: action.payload,
       };
     case 'SET_LOADING':
       return {
-        loading: true,
+        ...state,
+        loading: action.payload,
       };
     case 'SET_UI':
       return {
-        loading: true,
         ...state,
         UI: action.payload,
       };
@@ -104,7 +97,6 @@ const refreshCurrent = (room) => {
   return;
 };
 const setCurrentGame = (room, user) => {
-  console.log(user);
   socket.emit('setCurrentRoom', room, user);
   return;
 };
@@ -125,6 +117,7 @@ export function Store(props) {
 
   if (!socket) {
     socket = io(':5000');
+    console.log(socket, 'HI');
   }
   useEffect(() => {
     dispatch({ type: 'SET_SOCKET', payload: socket.id });
@@ -148,7 +141,6 @@ export function Store(props) {
     return;
   });
   socket.on('leaveLobby', async (socket) => {
-    console.log(socket);
     await leaveLobby();
 
     return;

@@ -20,6 +20,7 @@ function App() {
           <div className="container">
             <Routes>
               <Route path="/" element={<Lobby />} />
+              <Route path="/:title" element={<Lobby />} />
               <Route path="/signup" element={<SignUp />} />
             </Routes>
           </div>

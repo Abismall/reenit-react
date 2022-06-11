@@ -1,17 +1,13 @@
-import { createServer, get } from 'http';
-import { Server } from 'socket.io';
-import {
-  getGameById,
-  getAvailableLocations,
-  removeUserFromLobby,
-} from './api/requests.js';
+const app = require('express')();
+const httpServer = require('http').createServer(app);
+const getGameById = require('./api/requests/getGameById');
+const removeUserFromLobby = require('./api/requests/removeUserFromLobby');
+const getAvailableLocations = require('./api/requests/getAvailableLocations');
+const getCurrentGame = require('./api/requests/getCurrentGame');
 
-import express from 'express';
-
-const app = express();
-const httpServer = createServer(app);
+// const get = require('http');
 const port = 5000;
-const io = new Server(httpServer, {
+const io = require('socket.io')(httpServer, {
   cors: {
     origin: '*',
     methods: ['GET', 'POST'],
@@ -34,8 +30,14 @@ io.on('connection', async (socket) => {
   socket.on('disconnect', async () => {
     console.log(`user disconnected`);
     if (inGame[socket.id]) {
+      const res = await getCurrentGame(inGame[socket.id].id);
       await removeUserFromLobby(inGame[socket.id].id);
       delete inGame[socket.id];
+      console.log(res.title);
+      const update = await getGameById(res.title);
+      if (update) {
+        io.to(res.title).emit('refreshCurrentGame', update);
+      }
     }
     delete allOnlineUsers[socket.id];
   });
