@@ -12,22 +12,12 @@ services:
       - "8080:8080"
     command: >
       sh -c "node ."
-
-  react-app:
-    container_name: react_app
-    # restart: on-failure
+  nginx-react:
+    container_name: nginxreactapp
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: nginx/Dockerfile
     ports:
       - 80:80
     environment:
       NODE_ENV: production
-    # volumes:
-    #   - ./src:/app/src
-    # ports:
-    #   - "3000:3000"
-    # command: >
-    #   sh -c "npm start"
-    # depends_on:
-    #   - ws
