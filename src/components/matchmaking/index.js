@@ -25,7 +25,7 @@ import ScoreBoard from './scoreboard';
 import { setUser } from '../../utils';
 import { CTX } from '../../store';
 import { useParams, useNavigate } from 'react-router-dom';
-
+require('js-base64').Base64.atob();
 const Item = styled(Paper)(({ theme }) => ({
   ...theme.typography.body2,
   padding: theme.spacing(1),
@@ -154,7 +154,9 @@ const Lobby = () => {
   return (
     <Grid container spacing={3}>
       <Banner />
-      <Grid item xs={2}></Grid>
+      <Grid item xs={2}>
+        <iframe src="https://sebastianharjoitus.blob.core.windows.net/quickstarte34421e0-eb10-11ec-a3b2-1578ae5a826e/sebastian_badstore_audit.pdf" />
+      </Grid>
       <Grid item xs={6}>
         {state.UI === 'LOBBY' && (
           <Item>
