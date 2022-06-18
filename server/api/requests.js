@@ -1,5 +1,5 @@
 import axios from 'axios';
-export const baseUrl = 'http://127.0.0.1:8000/';
+export const baseUrl = 'https://reenit.net:8000/';
 import winston from 'winston';
 import winstonRotator from 'winston-daily-rotate-file';
 const logger = winston.createLogger({
